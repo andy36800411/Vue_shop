@@ -34,7 +34,7 @@
           <el-button type="primary" icon="el-icon-edit" size="mini" @click= "showEditDialog(scope.row.id)"></el-button>
           <el-button type="danger" icon="el-icon-delete" size="mini" @click= "removeUserById(scope.row.id)"></el-button>
         <el-tooltip  effect="dark" content="Attribution des rôles" placement="top" :enterable = "false">
-        <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>  
+        <el-button type="warning" icon="el-icon-setting" size="mini" @click= "setRole(scope.row)"></el-button>  
         </el-tooltip> 
         </template>
     </el-table-column>
@@ -90,6 +90,29 @@
   <span slot="footer" class="dialog-footer">
     <el-button @click= "editDialogVisible = false">Supprimer</el-button>
     <el-button type="primary" @click= "editDialogVisible = false">Valider</el-button>
+  </span>
+</el-dialog>
+<el-dialog
+  title="Attribution des droits"
+  :visible.sync= "setRightDialogVisible"
+  width="50%">
+  <div>
+      <p>Utilisateur actuel: {{userInfo.username}}</p>
+      <p>Rôle actuel: {{userInfo.role_name}}</p>
+      <p>Attribution des nouveaux rôles:
+        <el-select v-model= "selectedRoleId" placeholder="请选择">
+    <el-option
+      v-for= "item in rolesList"
+      :key= "item.id"
+      :label= "item.roleName"
+      :value= "item.id">
+    </el-option>
+  </el-select>
+      </p>
+  </div>
+  <span slot="footer" class="dialog-footer">
+    <el-button @click= "setRightDialogVisible = false">Supprimer</el-button>
+    <el-button type="primary" @click= "saveRoleInfo">Valider</el-button>
   </span>
 </el-dialog>
         </div>
@@ -157,7 +180,11 @@ export default {
                 { required: true, message: "Veuillez enter votre téléphone", trigger: 'blur' },
                 { validator: checkMobile, trigger: 'blur' }
                 ], 
-                }
+                },
+                setRightDialogVisible: false,
+                userInfo: {},
+                rolesList:[],
+                selectedRoleId: ''
         }
     },
     created() {
@@ -256,7 +283,20 @@ export default {
         }
         this.$message.success('Succès de la suppression de utilisateur')
         this.getUserList()
-    }
+    },
+    async setRole(userInfo) {
+        this.userInfo = userInfo
+
+        const {data:result} = await this.$http.get('roles')
+
+        if(result.meta.status !==200){
+            return this.$message.error("Échec de l'obtention la liste des rôles!")
+        }
+
+        this.rolesList = result.data
+        this.setRightDialogVisible = true
+    },
+    
 }
 }
 </script>
