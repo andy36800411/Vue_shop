@@ -100,7 +100,7 @@
       <p>Utilisateur actuel: {{userInfo.username}}</p>
       <p>Rôle actuel: {{userInfo.role_name}}</p>
       <p>Attribution des nouveaux rôles:
-        <el-select v-model= "selectedRoleId" placeholder="请选择">
+        <el-select v-model= "selectedRoleId" placeholder= "Veuillez choisir">
     <el-option
       v-for= "item in rolesList"
       :key= "item.id"
